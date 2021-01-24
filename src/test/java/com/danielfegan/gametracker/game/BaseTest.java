@@ -5,7 +5,9 @@ import com.danielfegan.gametracker.TestInitializer;
 import com.danielfegan.gametracker.game.model.GameDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.MultiPartSpecBuilder;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.List;
+import java.util.function.Function;
 
 import static io.restassured.RestAssured.given;
 import static java.nio.file.Files.readString;
@@ -37,7 +41,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class BaseTest {
 
     @Value("classpath:image/cartman.jpg")
-    private Resource boxArt;
+    protected Resource boxArt;
+
+    @Value("classpath:image/cartman2.jpg")
+    protected Resource boxArtTwo;
 
     @Value("classpath:json/post.json")
     private Resource gameRequest;
@@ -57,12 +64,18 @@ public class BaseTest {
     @Autowired
     private GameRepository gameRepository;
 
-    protected void giveICallTheV1PostGameEndpoint() throws IOException {
+    @AfterAll
+    public void tearDown() {
+        gameRepository.deleteAll();
+        s3Util.deleteFiles();
+    }
+
+    protected void givenICallTheV1PostGameEndpoint(final Resource image) throws IOException {
         given()
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
             .accept(ContentType.ANY)
             .multiPart(new MultiPartSpecBuilder(boxArt.getFile())
-                .fileName(boxArt.getFilename())
+                .fileName(image.getFilename())
                 .controlName("boxArt")
                 .mimeType("image/jpeg")
                 .build()
@@ -72,9 +85,26 @@ public class BaseTest {
                 .mimeType("application/json")
                 .build()
             )
-            .post("http://localhost:" + port + "/v1/game")
+            .post(getEndpointUrl.apply(port))
             .then()
             .statusCode(200);
+    }
+
+    protected void givenIHaveGamesSaved() throws IOException {
+        givenICallTheV1PostGameEndpoint(boxArt);
+        givenICallTheV1PostGameEndpoint(boxArtTwo);
+    }
+
+    protected List<GameDto> whenICallTheV1RetrieveAllEndpoint() {
+        return given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .get(getEndpointUrl.apply(port))
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(new TypeRef<>() {});
     }
 
     protected void andTheCallHasProcessedSuccessfully() {
@@ -101,5 +131,7 @@ public class BaseTest {
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    private final Function<Integer, String> getEndpointUrl = port -> "http://localhost:" + port + "/v1/game";
 
 }

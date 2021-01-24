@@ -4,3 +4,16 @@ spring:
       host: localhost
       port: 27017
       database: games
+  servlet:
+    multipart:
+      file-size-threshold: 5MB
+
+s3:
+  url: ${S3_URL:http://localhost:4566}
+  region: eu-west-1
+  accessKey: ${S3_ACCESS_KEY:foo}
+  secretKey: ${S3_SECRET_KEY:bar}
+  bucketName: ${S3_BUCKET:game-tracker}
+  outputPath: ${S3_OUTPUT_PATH:assets/images}
+  iamRole: ${S3_USE_IAM:false}
+  chunkedEncoding: false

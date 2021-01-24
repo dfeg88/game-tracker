@@ -1,10 +1,7 @@
 package com.danielfegan.gametracker.game;
 
-import com.danielfegan.gametracker.game.model.Game;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import com.danielfegan.gametracker.game.model.GameDto;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-@Configuration
-public interface GameRepository extends ReactiveMongoRepository<Game, String> {
-
+public interface GameRepository extends MongoRepository<GameDto, String> {
 }

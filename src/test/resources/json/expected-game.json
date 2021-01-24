@@ -1,0 +1,10 @@
+{
+  "id": "01f7dfbb-fd84-481b-a6f2-b3f4a34281a5",
+  "name": "test",
+  "platform": "PS5",
+  "genre": "Action",
+  "releaseDate": "2021-01-01",
+  "numberOfPlayers": 4,
+  "publisher": "Publisher",
+  "boxArtPath": "assets/images/cartman.jpg"
+}

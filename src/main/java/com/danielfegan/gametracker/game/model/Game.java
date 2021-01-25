@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Document(collection = "games")
-public class GameDto {
+public class Game {
     @Id
     private String id;
     private String name;

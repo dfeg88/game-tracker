@@ -9,7 +9,7 @@ public class WhenSavingANewGame extends BaseTest {
 
     @BeforeAll
     public void setup() throws IOException {
-        givenICallTheV1PostGameEndpoint(boxArt);
+        givenICallTheV1PostGameEndpoint(boxArt, 200);
         andTheCallHasProcessedSuccessfully();
     }
 

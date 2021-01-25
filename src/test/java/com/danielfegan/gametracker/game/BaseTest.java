@@ -2,7 +2,7 @@ package com.danielfegan.gametracker.game;
 
 import com.danielfegan.gametracker.S3Util;
 import com.danielfegan.gametracker.TestInitializer;
-import com.danielfegan.gametracker.game.model.GameDto;
+import com.danielfegan.gametracker.game.model.Game;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.MultiPartSpecBuilder;
 import io.restassured.common.mapper.TypeRef;
@@ -70,7 +70,7 @@ public class BaseTest {
         s3Util.deleteFiles();
     }
 
-    protected void givenICallTheV1PostGameEndpoint(final Resource image) throws IOException {
+    protected void givenICallTheV1PostGameEndpoint(final Resource image, final int status) throws IOException {
         given()
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
             .accept(ContentType.ANY)
@@ -87,15 +87,15 @@ public class BaseTest {
             )
             .post(getEndpointUrl.apply(port))
             .then()
-            .statusCode(200);
+            .statusCode(status);
     }
 
     protected void givenIHaveGamesSaved() throws IOException {
-        givenICallTheV1PostGameEndpoint(boxArt);
-        givenICallTheV1PostGameEndpoint(boxArtTwo);
+        givenICallTheV1PostGameEndpoint(boxArt, 200);
+        givenICallTheV1PostGameEndpoint(boxArtTwo, 200);
     }
 
-    protected List<GameDto> whenICallTheV1RetrieveAllEndpoint() {
+    protected List<Game> whenICallTheV1RetrieveAllEndpoint() {
         return given()
             .contentType(ContentType.JSON)
             .accept(ContentType.JSON)
@@ -115,18 +115,18 @@ public class BaseTest {
     }
 
     protected void thenTheGameHasBeenSavedInTheDatabase() throws IOException {
-        final GameDto actual = gameRepository.findAll().get(0);
+        final Game actual = gameRepository.findAll().get(0);
 
         assertThat(actual.getId()).isNotNull();
         assertThat(actual)
             .usingRecursiveComparison()
             .ignoringFields("id")
-            .isEqualTo(objectMapper.readValue(readString(expectedGameInDatabase.getFile().toPath()), GameDto.class));
+            .isEqualTo(objectMapper.readValue(readString(expectedGameInDatabase.getFile().toPath()), Game.class));
     }
 
     protected void andTheImageHasUploadedToS3() throws IOException {
-        final GameDto gameDto = gameRepository.findAll().get(0);
-        final byte[] actual = s3Util.getImage(gameDto.getBoxArtPath());
+        final Game game = gameRepository.findAll().get(0);
+        final byte[] actual = s3Util.getImage(game.getBoxArtPath());
         final byte[] expected = Files.readAllBytes(boxArt.getFile().toPath());
 
         assertThat(actual).isEqualTo(expected);

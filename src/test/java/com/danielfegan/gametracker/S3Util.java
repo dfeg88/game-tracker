@@ -48,8 +48,9 @@ public class S3Util {
                 .toArray(String[]::new)
             );
 
-        amazonS3Client.deleteObjects(deleteObjectsRequest);
-
-        await().atMost(Duration.ofSeconds(5)).until(this::isBucketEmpty);
+        if (listObjectsV2Result.getKeyCount() > 0) {
+            amazonS3Client.deleteObjects(deleteObjectsRequest);
+            await().atMost(Duration.ofSeconds(5)).until(this::isBucketEmpty);
+        }
     }
 }

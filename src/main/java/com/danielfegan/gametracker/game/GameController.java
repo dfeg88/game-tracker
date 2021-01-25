@@ -1,6 +1,6 @@
 package com.danielfegan.gametracker.game;
 
-import com.danielfegan.gametracker.game.model.GameDto;
+import com.danielfegan.gametracker.game.model.Game;
 import com.danielfegan.gametracker.game.model.GameRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -23,13 +22,13 @@ public class GameController {
 
     @PostMapping
     public ResponseEntity<Void> createGame(@RequestPart(name = "gameRequest") final GameRequest gameRequest,
-                                           @RequestPart(name = "boxArt") final MultipartFile boxArt) throws IOException, InterruptedException {
+                                           @RequestPart(name = "boxArt") final MultipartFile boxArt) {
         gameService.createGame(gameRequest, boxArt);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<GameDto>> retrieveAll() {
+    public ResponseEntity<List<Game>> retrieveAll() {
         return ResponseEntity.ok(gameService.retrieveAll());
     }
 

@@ -1,6 +1,6 @@
 package com.danielfegan.gametracker.game;
 
-import com.danielfegan.gametracker.game.model.GameDto;
+import com.danielfegan.gametracker.game.model.Game;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ public class WhenRetrievingGames extends BaseTest {
     @Value("classpath:json/expected-games-response.json")
     private Resource gamesList;
 
-    private List<GameDto> actual;
+    private List<Game> actual;
 
     @BeforeAll
     public void setup() throws IOException {
@@ -29,7 +29,7 @@ public class WhenRetrievingGames extends BaseTest {
 
     @Test
     public void returns_list_of_games_from_database() throws IOException {
-        final List<GameDto> expected = objectMapper.readValue(readString(gamesList.getFile().toPath()), new TypeReference<>() {
+        final List<Game> expected = objectMapper.readValue(readString(gamesList.getFile().toPath()), new TypeReference<>() {
         });
 
         assertThat(actual)

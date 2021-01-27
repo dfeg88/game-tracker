@@ -3,7 +3,6 @@
 ### Pre-requisites for running locally
 1. Have docker installed in your machine
 1. Built using Java 11
-1. AWS CLI required to set up s3 bucket and dynamodb table locally
 
 ### Setup
 1. Spin up required dependencies with `docker-conmpose up -d`
